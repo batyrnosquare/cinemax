@@ -1,9 +1,7 @@
-package dev.cinemax.cinemax;
-
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
+package dev.cinemax.cinemax.service;
+import dev.cinemax.cinemax.entity.Movies;
+import dev.cinemax.cinemax.repo.MovieRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 

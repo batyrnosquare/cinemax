@@ -1,5 +1,8 @@
-package dev.cinemax.cinemax;
+package dev.cinemax.cinemax.service;
 
+import dev.cinemax.cinemax.entity.Movies;
+import dev.cinemax.cinemax.entity.Reviews;
+import dev.cinemax.cinemax.repo.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,5 +32,10 @@ public class ReviewService {
                 .first();
 
         return review;
+    }
+
+    public List<Reviews> getReviewsByImdbId(String imdbId) {
+        // Assuming your repository has a method to fetch reviews by IMDb ID
+        return reviewRepository.findByImdbId(imdbId);
     }
 }

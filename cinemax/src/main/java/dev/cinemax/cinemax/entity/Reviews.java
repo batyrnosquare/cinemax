@@ -1,4 +1,4 @@
-package dev.cinemax.cinemax;
+package dev.cinemax.cinemax.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +15,8 @@ public class Reviews {
     @Id
     private ObjectId id;
     private String body;
+    private String imdbId;
+
 
     public Reviews(String body) {
         this.body = body;
