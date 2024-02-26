@@ -1,5 +1,6 @@
 package dev.cinemax.cinemax;
 
+import dev.cinemax.cinemax.entity.Role;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +13,13 @@ public class CinemaxApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CinemaxApplication.class, args);
+		System.out.println(String.valueOf(Role.ADMIN));
 	}
 
 	@GetMapping("/home")
 	public String apiIndex(){
 		return "CINEMAX";
 	}
+
 
 }
