@@ -1,6 +1,5 @@
 package dev.cinemax.cinemax.service;
 
-import dev.cinemax.cinemax.config.MyUserDetails;
 import dev.cinemax.cinemax.entity.User;
 import dev.cinemax.cinemax.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-        return user.map(MyUserDetails::new)
+        return user
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found."));
     }
 }

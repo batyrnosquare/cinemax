@@ -16,7 +16,7 @@ public class CinemaxApplication {
 		System.out.println(String.valueOf(Role.ADMIN));
 	}
 
-	@GetMapping("/home")
+	@GetMapping("/")
 	public String apiIndex(){
 		return "CINEMAX";
 	}
