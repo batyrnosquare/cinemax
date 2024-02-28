@@ -7,10 +7,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +36,6 @@ public class UserService {
         ReqRes resp = new ReqRes();
         try {
             User user = new User();
-            user.setUsername(registrationRequest.getUsername());
             user.setEmail(registrationRequest.getEmail());
             user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             user.setRoles(registrationRequest.getRoles());
@@ -54,8 +56,8 @@ public class UserService {
         ReqRes response = new ReqRes();
 
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getUsername(), signinRequest.getPassword()));
-            var user = userRepository.findByUsername(signinRequest.getUsername()).orElseThrow();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword()));
+            var user = userRepository.findByEmail(signinRequest.getEmail()).orElseThrow();
             System.out.println("USER IS:" + user);
             var jwt = jwtUtils.generateToken(user);
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
@@ -71,10 +73,14 @@ public class UserService {
         return response;
     }
 
+    public List<User> allUsers(){
+        return userRepository.findAll();
+    }
+
     public ReqRes refreshToken(ReqRes refreshTokenRequset){
         ReqRes response = new ReqRes();
-        String username = jwtUtils.extractUsername(refreshTokenRequset.getToken());
-        User user = userRepository.findByUsername(username).orElseThrow();
+        String email = jwtUtils.extractUsername(refreshTokenRequset.getToken());
+        User user = userRepository.findByEmail(email).orElseThrow();
         if (jwtUtils.isTokenValid(refreshTokenRequset.getToken(), user)){
             var jwt = jwtUtils.generateToken(user);
             response.setStatusCode(200);
@@ -86,4 +92,31 @@ public class UserService {
         response.setStatusCode(500);
         return response;
     }
+
+    public boolean addToWatchlist(String  email, String imdbId){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: "+ email));
+
+        if (user.getWatchlist() == null){
+            user.setWatchlist(new ArrayList<>());
+        }
+
+        List<String> watchlist = user.getWatchlist();
+        if (watchlist.contains(imdbId)){
+            return false;
+        }
+        watchlist.add(imdbId);
+
+        user.setWatchlist(watchlist);
+        userRepository.save(user);
+        return true;
+    }
+
+    public List<String> getWatchlist(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        return user.getWatchlist();
+    }
+
+
 }

@@ -2,6 +2,7 @@ package dev.cinemax.cinemax.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -30,6 +30,7 @@ public class User implements UserDetails{
     private String email;
     private String password;
     private Role roles;
+    private List<String> watchlist;
 
 
 
@@ -43,7 +44,7 @@ public class User implements UserDetails{
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

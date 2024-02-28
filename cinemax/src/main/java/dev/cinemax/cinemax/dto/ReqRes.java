@@ -23,6 +23,13 @@ public class ReqRes {
     private String email;
     private String password;
     private Role roles;
-    private List<Movies> watchlist;
+    private List<String> watchlist;
     private User user;
+
+    public ReqRes(){
+
+    }
+    public ReqRes(String message){
+        this.message = message;
+    }
 }
