@@ -18,7 +18,8 @@ public class Reviews {
     private String imdbId;
 
 
-    public Reviews(String body) {
+    public Reviews(String body, String imdbId ) {
         this.body = body;
+        this.imdbId = imdbId;
     }
 }

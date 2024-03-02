@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,19 +24,17 @@ public class ReviewService {
     public List<Reviews> allReviews(){
         return reviewRepository.findAll();
     }
-    public Reviews createReview(String reviewBody, String imdbId){
-        Reviews review = reviewRepository.insert(new Reviews(reviewBody));
+    public Reviews createReview(String reviewBody, String imdbId) {
+        Reviews review = reviewRepository.insert(new Reviews(reviewBody, imdbId));
 
         mongoTemplate.update(Movies.class)
                 .matching(Criteria.where("imdbId").is(imdbId))
-                .apply(new Update().push("reviewIds").value(review))
+                .apply(new Update().push("reviewIds").value(review.getId()))
                 .first();
-
         return review;
     }
 
     public List<Reviews> getReviewsByImdbId(String imdbId) {
-        // Assuming your repository has a method to fetch reviews by IMDb ID
         return reviewRepository.findByImdbId(imdbId);
     }
 }

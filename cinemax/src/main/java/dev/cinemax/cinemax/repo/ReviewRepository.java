@@ -1,5 +1,6 @@
 package dev.cinemax.cinemax.repo;
 
+import dev.cinemax.cinemax.entity.Movies;
 import dev.cinemax.cinemax.entity.Reviews;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
