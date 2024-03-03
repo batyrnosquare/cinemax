@@ -31,10 +31,7 @@ public class UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public void addUser(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
+
 
     public ReqRes signUp(ReqRes registrationRequest){
         ReqRes resp = new ReqRes();
@@ -127,6 +124,7 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
+
 
 
 }

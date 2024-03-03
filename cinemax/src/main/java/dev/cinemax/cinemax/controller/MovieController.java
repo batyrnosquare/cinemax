@@ -17,13 +17,15 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
-    @Autowired
-    private UserService userService;
 
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<List<Movies>> getMoviesByGenre(@PathVariable String genre){
+        return new ResponseEntity<>(movieService.getMoviesByGenre(genre), HttpStatus.OK);
+    }
 
-    @GetMapping("/usersnames")
-    public ResponseEntity<List<User>> getAllUsernames(){
-        return new ResponseEntity<>(userService.allUsers(), HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<List<Movies>> searchMoviesByName(@RequestParam String title){
+        return new ResponseEntity<>(movieService.searchMoviesByName(title), HttpStatus.OK);
     }
 
     @GetMapping

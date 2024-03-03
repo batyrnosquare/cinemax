@@ -64,6 +64,23 @@ public class WatchlistController {
         return new ResponseEntity<>(watchlistMovies, HttpStatus.OK);
     }
 
+    @DeleteMapping("/deleteFromWatchlist")
+    public ResponseEntity<String> removeFromWatchlist(@RequestBody String imdbId) {
+        Optional<User> userOptional = getUserFromContext();
+        User user = userOptional.orElse(null);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        if (user.getWatchlist().contains(imdbId)) {
+            user.getWatchlist().remove(imdbId);
+            userRepository.save(user);
+            return new ResponseEntity<>("Movie removed from watchlist", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Movie not found in watchlist", HttpStatus.NOT_FOUND);
+        }
+    }
+
     private Optional<User> getUserFromContext(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userService.getByUsername(email);

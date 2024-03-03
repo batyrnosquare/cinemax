@@ -36,4 +36,12 @@ public class MovieService {
     public void deleteMovie(String imdbId){
         movieRepository.findMovieByImdbId(imdbId).ifPresent(movieRepository::delete);
     }
+
+    public List<Movies> getMoviesByGenre(String genre) {
+        return movieRepository.findByGenresContaining(genre);
+    }
+
+    public List<Movies> searchMoviesByName(String title) {
+        return movieRepository.findByTitle(title);
+    }
 }
