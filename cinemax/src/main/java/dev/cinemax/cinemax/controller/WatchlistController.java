@@ -4,6 +4,7 @@ package dev.cinemax.cinemax.controller;
 import dev.cinemax.cinemax.dto.ReqRes;
 import dev.cinemax.cinemax.entity.Movies;
 import dev.cinemax.cinemax.entity.User;
+import dev.cinemax.cinemax.repo.UserRepository;
 import dev.cinemax.cinemax.service.MovieService;
 import dev.cinemax.cinemax.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,19 @@ public class WatchlistController {
     private UserService userService;
     @Autowired
     private MovieService movieService;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/addWatchlist")
     public ResponseEntity<String> addToWatchlist(@RequestBody String imdbId){
         Optional<User> userOptional = getUserFromContext();
-        User user = userOptional.get();
-        Optional<Movies> movies = movieService.singleMovie(imdbId);
-        if(movies.isEmpty()){
-            return new ResponseEntity<>("Movie not found.", HttpStatus.NOT_FOUND);
+        User user = userOptional.orElse(null);
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        Optional<Movies> moviesOptional = movieService.singleMovie(imdbId);
+
+
         if (!user.getWatchlist().contains(imdbId)){
             user.getWatchlist().add(imdbId);
             return new ResponseEntity<>("Movie added to watchlist", HttpStatus.OK);

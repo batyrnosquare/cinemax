@@ -3,6 +3,8 @@ package dev.cinemax.cinemax.service;
 import dev.cinemax.cinemax.dto.ReqRes;
 import dev.cinemax.cinemax.entity.Movies;
 import dev.cinemax.cinemax.entity.User;
+import dev.cinemax.cinemax.exception.IncorrectEmailException;
+import dev.cinemax.cinemax.exception.UserAlreadyExistsException;
 import dev.cinemax.cinemax.repo.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,14 @@ public class UserService {
     public ReqRes signUp(ReqRes registrationRequest){
         ReqRes resp = new ReqRes();
         try {
+            String regex = "^[\\w!#$%&'*+/=?^`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^`{|}~-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
+            if (!registrationRequest.getEmail().matches(regex)){
+                throw new IncorrectEmailException("Incorrect email format.");
+            }
+
+            if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()){
+                throw  new UserAlreadyExistsException("User with this email already exists!");
+            }
             User user = new User();
             user.setEmail(registrationRequest.getEmail());
             user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
@@ -117,7 +127,6 @@ public class UserService {
         userRepository.save(user);
         return true;
     }
-
 
 
 }
