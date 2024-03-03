@@ -2,36 +2,65 @@ package dev.cinemax.cinemax.controller;
 
 
 import dev.cinemax.cinemax.dto.ReqRes;
-import dev.cinemax.cinemax.repo.MovieRepository;
+import dev.cinemax.cinemax.entity.Movies;
+import dev.cinemax.cinemax.entity.User;
+import dev.cinemax.cinemax.service.MovieService;
 import dev.cinemax.cinemax.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/watchlist")
 public class WatchlistController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private MovieService movieService;
 
-    @PostMapping("/add-to-watchlist")
-    public ResponseEntity<ReqRes> addToWatchlist(@RequestBody Map<String, String> requestBody){
-        String email = requestBody.get("email");
-        String imdbId = requestBody.get("imdbId");
-        boolean isAdded = userService.addToWatchlist(email, imdbId);
-        if(isAdded){
-            return ResponseEntity.ok().build();
+    @PostMapping("/addWatchlist")
+    public ResponseEntity<String> addToWatchlist(@RequestBody String imdbId){
+        Optional<User> userOptional = getUserFromContext();
+        User user = userOptional.get();
+        Optional<Movies> movies = movieService.singleMovie(imdbId);
+        if(movies.isEmpty()){
+            return new ResponseEntity<>("Movie not found.", HttpStatus.NOT_FOUND);
+        }
+        if (!user.getWatchlist().contains(imdbId)){
+            user.getWatchlist().add(imdbId);
+            return new ResponseEntity<>("Movie added to watchlist", HttpStatus.OK);
         }else {
-            return ResponseEntity.badRequest().body(new ReqRes("Movie already exists in watchlist"));
+            return new ResponseEntity<>("Movie already in watchlist", HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<String>> getWatchlist(@RequestParam String email){
-        List<String> watchlist = userService.getWatchlist(email);
-        return ResponseEntity.ok(watchlist);
+    @GetMapping("/getWatchlist")
+    public ResponseEntity<List<Movies>> getWatchlist() {
+        Optional<User> userOptional = getUserFromContext();
+        User user = userOptional.orElse(null);
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Movies> watchlistMovies = new ArrayList<>();
+        for (String imdbId : user.getWatchlist()) {
+            Optional<Movies> moviesOptional = movieService.singleMovie(imdbId);
+            Movies movies = moviesOptional.orElse(null);
+            if (movies != null) {
+                watchlistMovies.add(movies);
+            }
+        }
+        return new ResponseEntity<>(watchlistMovies, HttpStatus.OK);
+    }
+
+    private Optional<User> getUserFromContext(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.getByUsername(email);
     }
 }

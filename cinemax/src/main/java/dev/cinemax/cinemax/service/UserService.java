@@ -1,6 +1,7 @@
 package dev.cinemax.cinemax.service;
 
 import dev.cinemax.cinemax.dto.ReqRes;
+import dev.cinemax.cinemax.entity.Movies;
 import dev.cinemax.cinemax.entity.User;
 import dev.cinemax.cinemax.repo.UserRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -92,6 +94,10 @@ public class UserService {
         response.setStatusCode(500);
         return response;
     }
+    public Optional<User> getByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
 
     public boolean addToWatchlist(String  email, String imdbId){
         User user = userRepository.findByEmail(email)
@@ -112,11 +118,6 @@ public class UserService {
         return true;
     }
 
-    public List<String> getWatchlist(String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
-        return user.getWatchlist();
-    }
 
 
 }
